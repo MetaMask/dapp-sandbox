@@ -1,0 +1,41 @@
+{
+  "name": "dapp-sandbox",
+  "version": "1.0.0",
+  "description": "creates a sandboxed iframe that runs dapps",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kumavis/iframe-sandbox"
+  },
+  "scripts": {
+    "test": "beefy test/index.js --live --open",
+    "start": "beefy example.js --live --open"
+  },
+  "browserify": {
+    "transform": [
+      "meowserify"
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.5.0",
+    "blockapps-web3": "git://github.com/kumavis/blockapps-web3.git#9c1ee8e99efe277804fc47d8b11142abbc46180c",
+    "end-of-stream": "^1.1.0",
+    "ethereumjs-tx": "^0.6.9",
+    "ethereumjs-util": "^2.0.3",
+    "frame-rpc": "^1.3.1",
+    "iframe": "^0.3.1",
+    "meowserify": "^1.0.1",
+    "object.observe": "^0.2.6",
+    "semaphore": "^1.0.3",
+    "uniq": "^1.0.1",
+    "web3": "^0.15.1",
+    "xhr-stream": "^1.1.0",
+    "xtend": "^4.0.0"
+  },
+  "devDependencies": {
+    "beefy": "^2.1.5",
+    "tape": "^4.0.0"
+  }
+}
