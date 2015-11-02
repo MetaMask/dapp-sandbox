@@ -15,7 +15,7 @@ var rpc = RPC(window, window.parent, origin, {
   initialize: initialize,
 })
 
-function signTx(txParams){
+function signTx(txParams, cb){
   rpc.call('signTx', txParams, cb)
 }
 

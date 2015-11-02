@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.5.0",
-    "blockapps-web3": "git://github.com/ConsenSys/blockapps-web3.git#f63a6ba9783f93ad43542e381d7c1df15a547ddb",
+    "blockapps-web3": "^1.1.7",
     "end-of-stream": "^1.1.0",
     "ethereumjs-tx": "0.6.9",
     "ethereumjs-util": "^2.0.3",
