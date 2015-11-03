@@ -16,6 +16,9 @@ inherits(DappSandbox, EventEmitter)
 function DappSandbox(opts){
   var self = this
   EventEmitter.call(self)
+  
+  // handle options
+  self.addresses = opts.addresses || []
 
   // setup initialization lock
   self.lock = new SimpleLock()
@@ -47,7 +50,10 @@ function DappSandbox(opts){
         self.sessionStorage.setData(data)
       },
     })
-    self.rpc.call('initialize', opts.config)
+    var initOpts = extend(opts.config, {
+      addresses: self.addresses,
+    })
+    self.rpc.call('initialize', initOpts)
     self.lock.unlock()
   }
 }

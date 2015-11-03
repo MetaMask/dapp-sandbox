@@ -7,7 +7,8 @@ sandbox = new DappSandbox({
   config: {
     PROXY_URL: 'https://proxy-beta.metamask.io/',
     TRANSFORM_URL: 'https://transform-beta.metamask.io/',
-  }
+  },
+  addresses: ['0x985095ef977ba75fb2bb79cd5c4b84c81392dff6'],
 })
 
 // css
@@ -28,5 +29,5 @@ sandbox.on('tx', function(txParams, cb){
   console.log('tx sig requested:', txParams)
 })
 
-// sandbox.navigateTo('http://meteor-dapp-boardroom.meteor.com/boardroom/0x34f210097f0c4fccac3d65f94c6450b9a50010ab/')
-sandbox.navigateTo('http://xkcd.com/1597')
+sandbox.navigateTo('http://meteor-dapp-boardroom.meteor.com/boardroom/0x34f210097f0c4fccac3d65f94c6450b9a50010ab/')
+// sandbox.navigateTo('http://xkcd.com/1597')
