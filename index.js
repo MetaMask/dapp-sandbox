@@ -1,9 +1,11 @@
+const urlUtil = require('url')
 const meowserify = require('meowserify')
 const RPC = require('frame-rpc')
 const EventEmitter = require('events').EventEmitter
 const inherits = require('util').inherits
 const extend = require('xtend')
 const iframe = require('iframe')
+const PrefixedStorage = require('./lib/prefixed-storage.js')
 const SimpleLock = require('./lib/simple-lock.js')
 const preambleSrc = meowserify(__dirname+'/frame.js')
 const preambleBody = '<'+'script type="text/javascript"'+'>'+preambleSrc+'<'+'/script'+'>'
@@ -28,8 +30,6 @@ function DappSandbox(opts){
   var origin = srcUrl.host ? srcUrl.origin : '*'
   frame.addEventListener('load', initializeRpc)
 
-  // inject storage
-
   function initializeRpc(ev) {
     frame.removeEventListener('load', initializeRpc)
     self.emit('load')
@@ -39,6 +39,12 @@ function DappSandbox(opts){
       },
       signTx: function(txParams, cb){
         self.emit('tx', txParams, cb)
+      },
+      updateLocalStorage: function(data){
+        self.localStorage.setData(data)
+      },
+      updateSessionStorage: function(data){
+        self.sessionStorage.setData(data)
       },
     })
     self.rpc.call('initialize', opts.config)
@@ -50,6 +56,12 @@ DappSandbox.prototype.navigateTo = function(url){
   var self = this
   // await initialization
   self.lock.await(function(){
-    self.rpc.call('navigateTo', url)
+    // inject storage
+    var urlData = urlUtil.parse(url)
+    var domain = urlData.protocol+'//'+urlData.host
+    self.localStorage = new PrefixedStorage(domain+'->', window.localStorage)
+    self.sessionStorage = new PrefixedStorage(domain+'->', window.sessionStorage)
+    // trigger navigation
+    self.rpc.call('navigateTo', url, self.localStorage.toJSON(), self.sessionStorage.toJSON())
   })
 }

@@ -1,7 +1,8 @@
+// polyfill Object.observe
+require('object.observe')
 const urlUtil = require('url')
 const extend = require('xtend')
-// const FakeSessionStorage = require('./lib/session-storage.js')
-const PrefixedStorage = require('./lib/prefixed-storage.js')
+const FakeSessionStorage = require('./lib/session-storage.js')
 const FakeLocation = require('./lib/location.js')
 const FakeHistory = require('./lib/history.js')
 var FakeXMLHttpRequest = require('./lib/xhr.js')
@@ -19,6 +20,7 @@ var windowPrototype = window.__proto__
 var _setTimeout = window.setTimeout
 var _setInterval = window.setInterval
 var _addEventListener = window.addEventListener
+
 
 function initializeEnvironment(opts){
 
@@ -54,7 +56,25 @@ function initializeEnvironment(opts){
     documentGlobal: documentGlobal,
     baseUrl: baseUrl,
     baseUrlData: baseUrlData,
-    config: vaporConfig
+    config: vaporConfig,
+    setLocalStorage: setLocalStorage,
+    setSessionStorage: setSessionStorage,
+  }
+
+  function setLocalStorage(initData){
+    windowGlobal.localStorage = new FakeSessionStorage(initData)
+    Object.observe(windowGlobal.localStorage, function(){
+      var data = windowGlobal.localStorage.toJSON()
+      opts.updateLocalStorage(data)
+    })
+  }
+
+  function setSessionStorage(initData){
+    windowGlobal.sessionStorage = new FakeSessionStorage(initData)
+    Object.observe(windowGlobal.sessionStorage, function(){
+      var data = windowGlobal.sessionStorage.toJSON()
+      opts.updateSessionStorage(data)
+    })
   }
 
   //
@@ -69,15 +89,13 @@ function initializeEnvironment(opts){
 
   var windowGlobalOverrides = {
     window: windowGlobal,
-    document: documentGlobal,
     top: windowGlobal,
-    localStorage: SKIP,
-    sessionStorage: SKIP,
-    location: SKIP,
+    document: documentGlobal,
     frameElement: null,
     history: new FakeHistory(baseUrlData, location),
-    localStorage: new PrefixedStorage(baseUrlData.host+'->'/*, window.localStorage*/),
-    sessionStorage: new PrefixedStorage(baseUrlData.host+'->'/*, window.sessionStorage*/),
+    location: SKIP,
+    localStorage: SKIP,
+    sessionStorage: SKIP,
   }
 
   var windowGlobalExtras = {

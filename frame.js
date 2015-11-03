@@ -10,29 +10,25 @@ var config = null
 
 var origin = document.referrer || '*'
 var rpc = RPC(window, window.parent, origin, {
-  navigateTo: navigateTo,
   initialize: function(_config){ config = _config },
+  navigateTo: navigateTo,
 })
 
+function urlChanged(url){ rpc.call('urlChanged', url) }
 
-function signTx(txParams, cb){
-  rpc.call('signTx', txParams, cb)
-}
-
-function urlChanged(url){
-  rpc.call('urlChanged', url)
-}
-
-function navigateTo(url){
+function navigateTo(url, localStorageData, sessionStorageData){
   config.BASE_URL = urlToBaseUrl(url)
   initializeEnvironment({
-    signTx: signTx,
-    urlChanged: urlChanged,
     config: config,
+    urlChanged: urlChanged,
+    signTx: function(txParams, cb){ rpc.call('signTx', txParams, cb) },
+    updateLocalStorage: function(data){ rpc.call('updateLocalStorage', data) },
+    updateSessionStorage: function(data){ rpc.call('updateSessionStorage', data) },
   })
-  urlChanged(url)
+  __VAPOR_RUNTIME__.setLocalStorage(localStorageData)
+  __VAPOR_RUNTIME__.setSessionStorage(sessionStorageData)
   loadUrl(url)
-  // simulateUsage()
+  urlChanged(url)
 }
 
 function loadUrl(targetUrl){
@@ -46,15 +42,4 @@ function loadUrl(targetUrl){
   var proxiedUrl = config.TRANSFORM_URL+'html/'+encodeURIComponent(targetUrl)
   new XhrStream(proxiedUrl)
   .pipe(domStream)
-}
-
-function simulateUsage(){
-  setTimeout(function(){
-    rpc.call('urlChanged', 'https://happydapp.com/fishes/')
-    setTimeout(function(){
-      rpc.call('signTx', {a:1, b:2}, function(err, tx){
-        console.log('tx was signed!', err, tx)
-      })
-    }, 2000)
-  }, 2000)
 }
