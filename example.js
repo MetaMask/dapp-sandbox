@@ -1,5 +1,7 @@
 var DappSandbox = require('./index.js')
 
+// 'ev-event': hg.sendSubmit(state.channels.submit)
+
 sandbox = new DappSandbox({
   container: document.body,
   config: {
@@ -26,4 +28,5 @@ sandbox.on('tx', function(txParams, cb){
   console.log('tx sig requested:', txParams)
 })
 
-sandbox.navigateTo('http://meteor-dapp-boardroom.meteor.com/boardroom/0x34f210097f0c4fccac3d65f94c6450b9a50010ab/')
+// sandbox.navigateTo('http://meteor-dapp-boardroom.meteor.com/boardroom/0x34f210097f0c4fccac3d65f94c6450b9a50010ab/')
+sandbox.navigateTo('http://xkcd.com/1597')

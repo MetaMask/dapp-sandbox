@@ -9,7 +9,10 @@ const ethereum = require('./lib/ethereum.js')
 const interceptLinks = require('./lib/intercept-links.js')
 const uniq = require('uniq')
 
-module.exports = initializeEnvironment
+module.exports = {
+  initializeEnvironment: initializeEnvironment,
+  setupHandlers: setupHandlers,
+}
 
 
 var windowPrototype = window.__proto__
@@ -23,7 +26,7 @@ function initializeEnvironment(opts){
   // expose environment variables
   //
 
-  var vaporConfig = opts.vaporConfig
+  var vaporConfig = opts.config
   PROXY_URL = vaporConfig.PROXY_URL
 
   //
@@ -36,6 +39,7 @@ function initializeEnvironment(opts){
 
   // bind classes to origin
   var location = new FakeLocation(baseUrl)
+  location.on('change', opts.urlChanged)
   FakeXMLHttpRequest = FakeXMLHttpRequest.bind(null, baseUrlData)
 
   // create globals
@@ -43,13 +47,14 @@ function initializeEnvironment(opts){
   var documentGlobal = {}
 
   // store globals on document
-  document.__runtimeContext__ = {
+  window.__VAPOR_RUNTIME__ = {
     originalWindow: window,
     originalDocument: document,
     windowGlobal: windowGlobal,
     documentGlobal: documentGlobal,
     baseUrl: baseUrl,
     baseUrlData: baseUrlData,
+    config: vaporConfig
   }
 
   //
@@ -77,8 +82,6 @@ function initializeEnvironment(opts){
 
   var windowGlobalExtras = {
     XMLHttpRequest: FakeXMLHttpRequest,
-    setTimeout: fakeSetTimeout,
-    setInterval: fakeSetInterval,
     addEventListener: fakeAddEventListener,
     removeEventListener: fakeRemoveEventListener,
     // ethereum specific
@@ -152,13 +155,12 @@ function initializeEnvironment(opts){
     },
   })
 
-  // intercept links to redirect to html transforming links
-  interceptLinks()
-
 
   //
   // ==================== util ===============
   //
+
+  function noop(){}
 
   function hackThePlanet(source, target, overrides, handleHooking) {
     overrides = overrides || {}
@@ -248,57 +250,6 @@ function initializeEnvironment(opts){
     return isCapital && onWindow
   }
 
-  // // copies all properties from source to target
-  // // binds functions to source
-  // // also adds extras
-
-  // function cloneOntoObject(source, target, overrides, extras) {
-  //   overrides = overrides || {}
-  //   extras = extras || {}
-  //   // 1) properties on source
-  //   var props = Object.getOwnPropertyNames(source)
-  //   for (var index in props) {
-  //     var key = props[index]
-  //     // set value from override
-  //     if (key in overrides) {
-  //       var value = overrides[key]
-  //       if (value === SKIP) continue
-  //       target[key] = value
-  //     // no override - use value on original object
-  //     } else {
-  //       // accessing properties can trigger security-related DOMExceptions
-  //       // so we wrap in a try-catch
-  //       try {
-  //         // bind functions
-  //         if (typeof source[key] === 'function') {
-  //           target[key] = source[key].bind(source)
-  //         // setup setter/getters for correct fallback (avoid illegal invocation error)
-  //         } else {
-  //           Object.defineProperty(target, key, {
-  //             get: function(source, key){ return source[key] }.bind(null, source, key),
-  //             set: function(source, key, value){ return source[key] = value }.bind(null, source, key),
-  //           })
-  //         }
-  //       } catch (_) {}
-  //     }
-  //   }
-  //   // 2) extras
-  //   for (var key in extras) {
-  //     var value = extras[key]
-  //     target[key] = value
-  //   }
-  // }
-
-  // setTimeout, setInterval
-
-  function fakeSetTimeout(cb, time) {
-    return _setTimeout(cb.bind(windowGlobal), time)
-  }
-
-  function fakeSetInterval(cb, time) {
-    return _setInterval(cb.bind(windowGlobal), time)
-  }
-
   // add event listener
   function fakeAddEventListener(type, listener, useCapture) {
     _addEventListener(type, function(event){
@@ -316,4 +267,9 @@ function initializeEnvironment(opts){
     console.warn('vapor - removeEventListener called - not implemented')
   }
 
+}
+
+function setupHandlers(opts){
+  // intercept links to redirect to html transforming links
+  interceptLinks(opts.navigateTo)
 }

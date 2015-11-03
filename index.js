@@ -13,20 +13,22 @@ module.exports = DappSandbox
 inherits(DappSandbox, EventEmitter)
 function DappSandbox(opts){
   var self = this
-  EventEmitter.call(this)
+  EventEmitter.call(self)
+
+  // setup initialization lock
   self.lock = new SimpleLock()
   self.lock.lock()
 
+  // setup iframe
   var iframeConfig = { container: opts.container }
   iframeConfig.body = preambleBody
   iframeConfig.sandboxAttributes = ['allow-scripts', 'allow-forms', 'allow-popups']
   var frame = self.iframe = iframe(iframeConfig).iframe
-
   var srcUrl = new URL(frame.getAttribute('src'))
-  // var origin = srcUrl.protocol + '//' + srcUrl.host
   var origin = srcUrl.host ? srcUrl.origin : '*'
-
   frame.addEventListener('load', initializeRpc)
+
+  // inject storage
 
   function initializeRpc(ev) {
     frame.removeEventListener('load', initializeRpc)
