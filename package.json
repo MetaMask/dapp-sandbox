@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.5.0",
-    "blockapps-web3": "^1.1.7",
+    "blockapps-web3": "^1.1.8",
     "end-of-stream": "^1.1.0",
     "ethereumjs-tx": "0.6.9",
     "ethereumjs-util": "^2.0.3",
