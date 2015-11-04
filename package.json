@@ -1,6 +1,6 @@
 {
   "name": "dapp-sandbox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "creates a sandboxed iframe that runs dapps",
   "main": "index.js",
   "repository": {
