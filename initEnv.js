@@ -103,7 +103,7 @@ function initializeEnvironment(opts){
     addEventListener: fakeAddEventListener,
     removeEventListener: fakeRemoveEventListener,
     // ethereum specific
-    web3: ethereum(baseUrlData, vaporConfig.addresses, opts.signTx),
+    web3: ethereum(vaporConfig.addresses, opts.processWeb3Payload),
   }
 
   var externalGlobals = {/* INSERT EXTERNAL GLOBALS HERE */}

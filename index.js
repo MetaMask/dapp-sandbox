@@ -40,8 +40,8 @@ function DappSandbox(opts){
       urlChanged: function(url){
         self.emit('url', url)
       },
-      signTx: function(txParams, cb){
-        self.emit('tx', txParams, cb)
+      processWeb3Payload: function(payload, cb){
+        self.emit('web3Payload', payload, cb)
       },
       updateLocalStorage: function(data){
         self.localStorage.setData(data)
