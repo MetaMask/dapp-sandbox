@@ -21,7 +21,7 @@ function navigateTo(url, localStorageData, sessionStorageData){
   initializeEnvironment({
     config: config,
     urlChanged: urlChanged,
-    processWeb3Payload: function(payload, cb){ console.log('sending payload:', payload); rpc.call('processWeb3Payload', payload, cb) },
+    processWeb3Payload: function(payload, cb){ rpc.call('processWeb3Payload', payload, cb) },
     updateLocalStorage: function(data){ rpc.call('updateLocalStorage', data) },
     updateSessionStorage: function(data){ rpc.call('updateSessionStorage', data) },
   })
