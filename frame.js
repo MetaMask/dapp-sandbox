@@ -35,6 +35,9 @@ function loadUrl(targetUrl){
   // DOM handlers must be created after document write has started
   var domStream = new DomStream()
   domStream.on('beforeClose', function(){
+    // rehook rpc
+    window.addEventListener('message', rpc._onmessage)
+    // setup environment handlers
     setupHandlers({
       navigateTo: navigateTo,
     })
