@@ -41,7 +41,14 @@ function DappSandbox(opts){
         self.emit('url', url)
       },
       processWeb3Payload: function(payload, cb){
-        self.emit('web3Payload', payload, cb)
+        self.emit('web3Payload', payload, function(err){
+          var args = [].slice.apply(arguments)
+          // if error in response, stringify
+          if (err && err.constructor === Error) {
+            args[0] = err.stack
+          }
+          cb.apply(null, args)
+        })
       },
       updateLocalStorage: function(data){
         self.localStorage.setData(data)
