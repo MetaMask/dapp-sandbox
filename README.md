@@ -1,5 +1,7 @@
 ### DappSandbox
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kumavis/dapp-sandbox.svg)](https://greenkeeper.io/)
+
 ```js
 var sandbox = new DappSandbox({
   container: document.body,
